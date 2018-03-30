@@ -5,41 +5,37 @@
 #include <regex.h>
 #include <unistd.h>
 
-
-int error(char text[]) {
-    fprintf(stderr, "%s", text);
+int error(char text[])
+{
+    fprintf(stderr, "%s\n", text);
     exit(1);
 }
 
-
-char* concat(const char *s1, const char *s2)
+char *concat(const char *s1, const char *s2)
 {
-    char *result = malloc(strlen(s1)+strlen(s2)+1);//+1 for the null-terminator
+    char *result = malloc(strlen(s1) + strlen(s2) + 1); //+1 for the null-terminator
     //in real code you would check for errors in malloc here
     strcpy(result, s1);
     strcat(result, s2);
     return result;
 }
 
-
-
-bool in_file(char ip_address[], char host[], FILE *file_pointer) {
+bool host_entry_already(char host[], FILE *file_pointer)
+{
     char buffer[255];
     regex_t regex;
-    char *pattern = "";
-
-    pattern = concat(pattern, "[ ]*");
-    pattern = concat(pattern, ip_address);
-    pattern = concat(pattern, "[ ]*");
-    pattern = concat(pattern, host);
+    char *pattern = concat("[ ]*", host);
     int compiled_regex = regcomp(&regex, pattern, 0);
-    if(compiled_regex) {
+    if (compiled_regex)
+    {
         error("Failed to compile regex");
     }
 
-    while(fgets(buffer, 255, file_pointer) != NULL) {
+    while (fgets(buffer, 255, file_pointer) != NULL)
+    {
         int result = regexec(&regex, buffer, 0, NULL, REG_EXTENDED);
-        if(result == 0) {
+        if (result == 0)
+        {
             regfree(&regex);
             return true;
         }
@@ -49,10 +45,17 @@ bool in_file(char ip_address[], char host[], FILE *file_pointer) {
 }
 
 
+void add_hosts_file_entry(char ip[], char host[])
+{
+    printf("Adding entry\n");
+}
+
+
 int main(int argc, char *argv[])
 {
-    if(argc != 3) {
-        error("ERROR: Incorrect number of args.\n");
+    if (argc != 3)
+    {
+        error("ERROR: Incorrect number of args.");
     }
     char *ip_address = argv[1];
     char *host_name = argv[2];
@@ -61,17 +64,22 @@ int main(int argc, char *argv[])
 
     FILE *file_pointer = fopen("./hosts", "r");
 
-    if(file_pointer == NULL) {
-        error("ERROR:Cannot open hosts file!\n");
+    if (file_pointer == NULL)
+    {
+        error("ERROR:Cannot open hosts file!");
     }
 
-    bool already_in_file = in_file("127.0.0.1", "localhost", file_pointer);
-    if(already_in_file == true) {
-        printf("Entry in hosts file already");
-    } else {
-        printf("Entry NOT in hosts file already");
-
+    bool already_host_entry_already = host_entry_already("localhost", file_pointer);
+    if (already_host_entry_already == true)
+    {
+        printf("Entry in hosts file already\n");
     }
+    else
+    {
+        printf("Entry NOT in hosts file already\n");
+    }
+
+    add_hosts_file_entry(ip_address, host_name);
     // while (fscanf(file_pointer, "%s %s", f_ip, f_host) != EOF) {
     //     printf("File IP %s", f_ip);
     //     printf("File Host %s", f_host);
