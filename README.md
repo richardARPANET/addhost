@@ -1,6 +1,6 @@
 # addhost.c
 
-A simple C program to set an entry in your [hosts](https://en.wikipedia.org/wiki/Hosts_(file)) file.
+A simple program to set an entry in your [hosts](https://en.wikipedia.org/wiki/Hosts_(file)) file.
 
 # Compile
 
